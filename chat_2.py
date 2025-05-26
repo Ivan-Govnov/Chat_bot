@@ -3,13 +3,10 @@ import random
 import datetime
 import webbrowser
 import requests
-import json
 
-# Настройки
-WEATHER_API_KEY = '7a4443cf1174bbbd8262b389c0e57fda'  # Замените на ваш API-ключ OpenWeatherMap
+WEATHER_API_KEY = '7a4443cf1174bbbd8262b389c0e57fda'
 LOG_FILE = 'chat_log.txt'
 
-# Словарь шаблонов с регулярными выражениями
 patterns = {
     "greeting": r"\b(привет|здравствуйте|хей|добрый день|доброе утро|добрый вечер)\b",
     "time": r"\b(время|который час|сколько времени|дата|какой сегодня день)\b",
@@ -21,7 +18,6 @@ patterns = {
     "how_are_you": r"\b(как дела|как жизнь|как ты|как настроение)\b"
 }
 
-# Возможные ответы
 responses = {
     "greeting": ["Привет!", "Здравствуйте!", "Хей!", "Здравствуйте, чем могу помочь?"],
     "time": ["Сейчас {time}, сегодня {date}.", "Время: {time}, дата: {date}."],
@@ -59,7 +55,6 @@ responses = {
 
 
 def log_conversation(user_input, bot_response):
-    """Логирование диалога в файл"""
     with open(LOG_FILE, 'a', encoding='utf-8') as f:
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         f.write(f"{timestamp} Вы: {user_input}\n")
@@ -83,28 +78,21 @@ def get_weather(city):
 
 
 def extract_city_from_query(user_input):
-    """Извлекает название города из запроса"""
-    # Ищем паттерн "погода в [город]"
     weather_pattern = r"погода в ([а-яё\s]+)"
     match = re.search(weather_pattern, user_input, re.IGNORECASE)
 
     if match:
         city = match.group(1).strip()
-        # Удаляем возможные дополнительные слова после города
-        city = re.sub(r"\s+(пожалуйста|сейчас|сегодня|завтра|там).*$", "", city, flags=re.IGNORECASE)
         return city if city else None
     return None
 
 
 def process_input(user_input):
-    """Обработка ввода пользователя"""
     user_input = user_input.lower().strip()
 
-    # Проверка на выход
     if user_input in ["выход", "exit", "quit", "пока"]:
         return False, "До свидания! Было приятно пообщаться."
 
-    # Поиск совпадений с шаблонами
     for key, pattern in patterns.items():
         match = re.search(pattern, user_input, re.IGNORECASE)
         if match:
@@ -166,13 +154,10 @@ def process_input(user_input):
             elif key in ["greeting", "name", "function", "how_are_you"]:
                 return True, random.choice(responses[key])
 
-    # Если не найдено совпадений
     return True, random.choice(responses["default"])
 
 
-# Основной цикл чат-бота
 print("Чат-бот: Привет! Я ваш виртуальный помощник. Скажите 'выход' чтобы завершить общение.")
-
 while True:
     user_input = input("Вы: ")
     continue_chat, bot_response = process_input(user_input)
